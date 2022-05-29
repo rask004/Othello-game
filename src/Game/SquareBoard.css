@@ -1,0 +1,50 @@
+.board {
+    display: inline-block;
+    border: 2px solid #BBBBBB;
+    padding: 4px;
+    margin: 8px;
+    margin-bottom: 16px;
+    box-shadow: 8px 8px #666666;
+}
+
+.board-row {
+    display: flex;
+}
+
+.board-row:last-child > .board-space, .board-row:last-child > .board-button {
+    border-bottom: 1px solid #C8C8C8;
+}
+
+.board-space {
+    border-width: 0;
+    border-style: solid;
+    border-top: 1px solid #C8C8C8;
+    border-left: 1px solid #C8C8C8;
+    border-bottom: 1px solid white;
+    border-right: 1px solid white;
+    width: 48px;
+    height: 48px;
+    padding: 2px;
+    display: inline-flex;
+    background-color: rgba(240,240,240,1);
+}
+
+button.board-space {
+    cursor: pointer;
+    width: 54px;
+    height: 54px;
+    background-color: rgba(248,248,248,1);
+    border-color: rgba(88, 88, 88, 0.5);
+}
+
+button.board-space:hover {
+    border-color: rgba(88, 88, 88, 1);
+}
+
+button.board-space:active {
+    background-color: rgba(255,255,255,1);
+}
+
+.board-space:last-child, .board-button:last-child {
+    border-right: 1px solid #C8C8C8;
+}

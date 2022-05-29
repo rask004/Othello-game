@@ -1,0 +1,46 @@
+.counter {
+    border: 1px solid black;
+    width: 36px;
+    height: 36px;
+    margin: auto;
+}
+
+.counter-round {
+    border-radius: 100%;
+}
+
+.counter-square {
+    border-radius: 25%;
+}
+
+.counter-white {
+    background-color: white;
+}
+
+.counter-black {
+    background-color: black;
+}
+
+.counter-red {
+    background-color: red;
+}
+
+.counter-blue {
+    background-color: blue;
+}
+
+.counter-yellow {
+    background-color: yellow;
+}
+
+.counter-cyan {
+    background-color: cyan;
+}
+
+.counter-magenta {
+    background-color: magenta;
+}
+
+.counter-green {
+    background-color: green;
+}
