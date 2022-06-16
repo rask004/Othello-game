@@ -7,6 +7,9 @@ class Constants {
     static winningSequenceLength = 5
 
     static minLengthCheckingValidMoves = 3
+
+    static boardWidth = 8
+    static boardHeight = 8
 }
 
 export default Constants;

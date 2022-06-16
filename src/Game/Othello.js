@@ -169,7 +169,7 @@ const getValidMoves = (board, player) => {
 }
 
 const validateGameEnd = (board) => {
-    console.log("Othello :: validateGameEnd")
+    // console.log("Othello :: validateGameEnd")
     const sequences = _decomposeToSequences(board)
     for (const s of _filterSequencesOfMinLength(sequences, Constants.winningSequenceLength)) {
         // any sequence with 4 or less counters in total, anywhere, cannot have a winning sequence
@@ -186,7 +186,7 @@ const validateGameEnd = (board) => {
             } 
             const name = s[i].item.name
             if (s[i+1].item.name === name && s[i+2].item.name === name && s[i+3].item.name === name && s[i+4].item.name === name) {
-                return true
+                return name
             }
         }
     }
@@ -199,15 +199,17 @@ const updateCaptures = (board, loc) => {
     const player = board[y][x]
     const sequencesToCheck = []
     for (const s of _getSequencesByLocation(board, loc)) {
+        // console.log("Debugging >> updateCaptures, examining sequence=", s)
         let i = 0
         while (i < s.length) {
-            i++
+            // console.log("Debugging >>   updateCaptures, comparing position=", i, s[i])
             if (s[i].x === x && s[i].y === y) {
                 break
             }
+            i++
         }
         if ((i-1 >= 0 && s[i-1].item !== Constants.emptySpace && s[i-1].item.name !== player.name) ||
-            (i+1 <= s.length && s[i+1].item !== Constants.emptySpace && s[i+1].item.name !== player.name)
+            (i+1 < s.length && s[i+1].item !== Constants.emptySpace && s[i+1].item.name !== player.name)
         ) {
             sequencesToCheck.push(s)
         }
@@ -216,10 +218,10 @@ const updateCaptures = (board, loc) => {
     for (const s of sequencesToCheck) {
         let i = 0
         while (i < s.length) {
-            i++
             if (s[i].x === x && s[i].y === y) {
                 break
             }
+            i++
         }
         let tmpStack = []
         // console.log("Debugging >>   updateCaptures, at", x, y, "; process sequence=", s)

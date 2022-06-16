@@ -1,10 +1,11 @@
 .board {
     display: inline-block;
-    border: 2px solid #BBBBBB;
+    border: 2px solid #B1B1B1;
     padding: 4px;
     margin: 8px;
     margin-bottom: 16px;
     box-shadow: 8px 8px #666666;
+    background: url("Assets/board-grain.jpg");
 }
 
 .board-row {
@@ -12,28 +13,28 @@
 }
 
 .board-row:last-child > .board-space, .board-row:last-child > .board-button {
-    border-bottom: 1px solid #C8C8C8;
+    border-bottom: 1px solid #B1B1B1;
 }
 
 .board-space {
     border-width: 0;
     border-style: solid;
-    border-top: 1px solid #C8C8C8;
-    border-left: 1px solid #C8C8C8;
+    border-top: 1px solid #B1B1B1;
+    border-left: 1px solid #B1B1B1;
     border-bottom: 1px solid white;
     border-right: 1px solid white;
     width: 48px;
     height: 48px;
     padding: 2px;
     display: inline-flex;
-    background-color: rgba(240,240,240,1);
+    background-color: rgba(232,230,230,0.2);
 }
 
 button.board-space {
     cursor: pointer;
     width: 54px;
     height: 54px;
-    background-color: rgba(248,248,248,1);
+    background-color: rgba(248,248,248,0.6);
     border-color: rgba(88, 88, 88, 0.5);
 }
 

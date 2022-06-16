@@ -6,7 +6,7 @@ function Counter (props) {
         const elementClass = `counter counter-${shape} counter-${color}`;
         const label = `game counter ${shape} ${color}`;
         return (
-            <div aria-label={label} className={elementClass} />
+            <span aria-label={label} className={elementClass} />
         );
 }
 

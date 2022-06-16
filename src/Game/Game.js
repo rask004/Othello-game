@@ -13,13 +13,14 @@ class Game extends React.Component {
 
     constructor(props) {
         super(props)
-        const players = [{name: "Human_A", color:"black"}, {name: "Human_B", color:"white"}];
-        const board = this._createBoard(props.boardWidth, props.boardHeight, players);
+        const players = [{name: "Human_A", color:"black"}, {name: "Human_B", color:"white"}]
+        const board = this.createBoard(Constants.boardWidth, Constants.boardHeight, players)
         this.state = {
             players,
             currentPlayer: 0,
             board,
-            isFinished: false
+            isFinished: false,
+            winner: false
         };
 
         this.getValidMoves = getValidMoves;
@@ -27,8 +28,8 @@ class Game extends React.Component {
         this.validateGameEnd = validateGameEnd;
     }
 
-    _createBoard(width, height, players) {
-        const spaces = [];
+    createBoard(width, height, players) {
+        let spaces = [];
         for (let i = 0; i < height; i++) {
             const row = [];
             for (let j = 0; j < width; j++) {
@@ -54,13 +55,27 @@ class Game extends React.Component {
         return this.state.players[this.state.currentPlayer];
     }
 
+    resetGame() {
+        const players = [{name: "Human_A", color:"black"}, {name: "Human_B", color:"white"}]
+        const board = this.createBoard(Constants.boardWidth, Constants.boardHeight, players)
+        this.setState({
+            players,
+            currentPlayer: 0,
+            board,
+            isFinished: false,
+            winner: false
+        })
+    }
+
     doMove(x, y) {
         if (!this.state.isFinished) {
             const oldBoard = this.state.board;
             oldBoard[y][x] = this.getCurrentPlayer();
             const board = this.updateCaptures(oldBoard, {x, y});
-            const isFinished = this.validateGameEnd(board);
-            this.setState({board, isFinished});
+            // winner will be false, or the name of the winning player
+            const winner = this.validateGameEnd(board);
+            const isFinished = !winner ? false : true
+            this.setState({board, isFinished, winner});
             if (!isFinished) {
                 this.setNextPlayer();
             }
@@ -68,14 +83,21 @@ class Game extends React.Component {
     }
 
     render() {
-        const {board, isFinished} = this.state
+        const {board, isFinished, winner} = this.state
+        // console.log(isFinished, winner)
         const player = this.getCurrentPlayer()
         let moves = []
-        let message = ""
+        let winnerColor = undefined
         if (!isFinished) {
             moves = this.getValidMoves(board, player);
         } else {
-            message = "game has finished"
+            for (const p of this.state.players) {
+                console.log(p, winner)
+                if (p.name === winner) {
+                    winnerColor = p.color
+                    break
+                }
+            }
         }
 
         const counterType = Constants.counterRound
@@ -84,15 +106,20 @@ class Game extends React.Component {
             counterShape = "round";
         }
 
-
         const callback = (x, y) => {
             this.doMove(x,y);
         };
         return (
-            <div className="board-container">
-                <p className="message">{isFinished? message : <><span>Current Player: </span><Counter color={player.color} shape={counterShape} /></>}</p>
-                <SquareBoard board={board} counterType={counterType} validMoves={moves} spaceCallback={callback} />
-            </div>
+            <>
+                <div className="message">{isFinished? 
+                    <><Counter color={winnerColor} shape={counterShape} /><span>Is the Winner! </span></> : 
+                    <><span>Current Turn: </span><Counter color={player.color} shape={counterShape} /></>}
+                </div>
+                <div className="board-container">
+                    <SquareBoard board={board} counterType={counterType} validMoves={moves} spaceCallback={callback} />
+                </div>
+                <button className="reset" onClick={() => this.resetGame()}>Restart</button>
+            </>
         );
     }
 }
