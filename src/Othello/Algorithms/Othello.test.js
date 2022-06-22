@@ -1,6 +1,6 @@
 import assert, { fail } from 'node:assert';
-import {getValidMoves, validateGameEnd, updateCaptures, _decomposeToSequences} from './Othello';
-import Constants from './Constants.js';
+import {getValidMoves, validateGameEnd, updateCaptures, decomposeToSequences} from './Othello';
+import Constants from '../Constants.js';
 
 const players = [{name: "A", color:"red"}, {name: "B", color:"blue"}];
 let board;

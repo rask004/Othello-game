@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { unmountComponentAtNode } from "react-dom";
 import SquareBoard from './SquareBoard';
 import {SquareBoardSpace, InteractiveSquareBoardSpace} from './SquareBoard';
-import Constants from './Constants';
+import Constants from '../Constants';
 
 let container = null;
 beforeEach(() => {

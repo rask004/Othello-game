@@ -1,9 +1,12 @@
-import Constants from './Constants'
+import Constants from '../Constants'
 
-/* 
-    convert all rows, columns and diagonals into a sequence of sequences.
+/**
+ * convert all rows, columns and diagonals into a sequence of sequences.
+ * 
+ * @param {object[][]} board the 2D board to work from
+ * @public
 */
-const _decomposeToSequences = function *(board) {
+export const decomposeToSequences = function *(board) {
     const h = board.length
     const w = board[0].length
     // rows
@@ -62,9 +65,16 @@ const _decomposeToSequences = function *(board) {
     }
 }
 
-const _getSequencesByLocation = function *(board, loc) {
+/**
+ * yield only sequences containing a given position
+ * 
+ * @param {object[][]} board the 2D board to work from
+ * @param {{x:number, y:number}} loc the given position
+ * @public
+*/
+export const getSequencesByLocation = function *(board, loc) {
     const {x, y} = loc
-    for (const s of _decomposeToSequences(board)) {
+    for (const s of decomposeToSequences(board)) {
         for (const position of s) {
             if(x === position.x && y === position.y) {
                 yield s
@@ -73,11 +83,19 @@ const _getSequencesByLocation = function *(board, loc) {
     }
 }
 
-const _getSequencesByPlayer = function *(board, player) {
-    const {name} = player
-    for (const s of _decomposeToSequences(board)) {
+/**
+ * yield only sequences containing counters of a given player
+ * 
+ * @param {object[][]} board the 2D board to work from
+ * @param {object} player the given player
+ * @public
+*/
+export const getSequencesByPlayer = function *(board, player) {
+    const {color} = player
+    for (const s of decomposeToSequences(board)) {
         for (const position of s) {
-            if(position.item !== Constants.emptySpace && position.item.name === name) {
+            // console.log("checking for sequences by player: ", position)
+            if(position.item !== Constants.emptySpace && position.item.color === color) {
                 const {x, y} = position
                 yield {locX:x, locY:y, sequence:s}
             }
@@ -85,7 +103,13 @@ const _getSequencesByPlayer = function *(board, player) {
     }
 }
 
-const _filterSequencesWithEmptySpaces = function *(sequences) {
+/**
+ * filter to yield only sequences containing empty spaces
+ * 
+ * @param {[{x:number, y:number, item: object}]} sequences the sequences to filter
+ * @public
+*/
+export const filterSequencesWithEmptySpaces = function *(sequences) {
     for(const s of sequences) {
         let seq;
         // check for {x,y,s} object
@@ -103,7 +127,14 @@ const _filterSequencesWithEmptySpaces = function *(sequences) {
     }
 }
 
-const _filterSequencesOfMinLength = function * (sequences, minLength = 1) {
+/**
+ * filter to yield only sequences of a minimum length
+ * 
+ * @param {[{x:number, y:number, item: object}]} sequences the sequences to filter
+ * @param {number} minLength the minimum length for a sequence
+ * @public
+*/
+export const filterSequencesOfMinLength = function * (sequences, minLength = 1) {
     for(const s of sequences) {
         let seq;
         // check for {x,y,s} object
@@ -118,12 +149,20 @@ const _filterSequencesOfMinLength = function * (sequences, minLength = 1) {
     }
 }
 
-const getValidMoves = (board, player) => {
+/**
+ * obtain all valid moves on the board for the given player 
+ * 
+ * @param {object[][]} board the 2D board
+ * @param {object} player the active player 
+ * @return {[{x:number,y:number}]} array of validMoves by x,y
+ * @public
+*/
+export const getValidMoves = (board, player) => {
     // console.log("Othello :: getValidMoves")
     let validMoves = []
-    const playerSequences = _getSequencesByPlayer(board, player)
-    const minLengthSequences = _filterSequencesOfMinLength(playerSequences, Constants.minLengthCheckingValidMoves)
-    for (const s of _filterSequencesWithEmptySpaces(minLengthSequences)) {
+    const playerSequences = getSequencesByPlayer(board, player)
+    const minLengthSequences = filterSequencesOfMinLength(playerSequences, Constants.minLengthCheckingValidMoves)
+    for (const s of filterSequencesWithEmptySpaces(minLengthSequences)) {
         const {locX, locY, sequence} = s
         for (let pos in sequence) {
             // because sometimes pos is a string, unsure why ?
@@ -132,7 +171,7 @@ const getValidMoves = (board, player) => {
             if (x === locX && y === locY) {
                 // console.log(`DEBUG >> found source counter at x=${x},y=${y} for sequence=`, sequence)
                 const prev = n - 1
-                if (prev >= 0 && sequence[prev].item !== Constants.emptySpace && sequence[prev].item.name !== player.name) {
+                if (prev >= 0 && sequence[prev].item !== Constants.emptySpace && sequence[prev].item.color !== player.color) {
                     // console.log("Candidate sequence: ", sequence)
                     // console.log("Candidate valid move, prev: ", prev, sequence[prev])
                     for (let i = prev - 1; i >= 0; i--) {
@@ -141,13 +180,13 @@ const getValidMoves = (board, player) => {
                             validMoves.push({x, y})
                             // console.log(`DEBUG >>     found valid move at x=${x},y=${y} for sequence=`, sequence)
                             break
-                        } else if (sequence[i].item.name === player.name) {
+                        } else if (sequence[i].item.color === player.color) {
                             break
                         }
                     }
                 }
                 const next = n + 1
-                if (next < sequence.length && sequence[next].item !== Constants.emptySpace && sequence[next].item.name !== player.name) {
+                if (next < sequence.length && sequence[next].item !== Constants.emptySpace && sequence[next].item.color !== player.color) {
                     // console.log("Candidate sequence: ", sequence)
                     // console.log("Candidate valid move, next: ", next, sequence[next])
                     for (let i = next + 1; i < sequence.length; i++) {
@@ -156,7 +195,7 @@ const getValidMoves = (board, player) => {
                             validMoves.push({x, y})
                             // console.log(`DEBUG >>     found valid move at x=${x},y=${y} for sequence=`, sequence)
                             break
-                        } else if (sequence[i].item.name === player.name) {
+                        } else if (sequence[i].item.color === player.color) {
                             break
                         }
                     }
@@ -168,10 +207,55 @@ const getValidMoves = (board, player) => {
     return validMoves
 }
 
-const validateGameEnd = (board) => {
+/**
+ * check for empty 
+ * 
+ * @param {object[][]} board the 2D board
+ * @param {object} player the active player 
+ * @return {boolean} true if there are empty spaces, otherwise false
+ * @public
+*/
+export const hasEmptySpaces = (board) => {
+    for (const row of board) {
+        const spaces = row.filter(item => item===Constants.emptySpace)
+        if (spaces.length > 0) {
+            return true
+        }
+    }
+    return false
+}
+
+/**
+ * check for empty 
+ * 
+ * @param {object[][]} board the 2D board
+ * @return {object} counts of counters for respective player colors
+ * @public
+*/
+export const countPlayerCounters = (board) => {
+    let white = 0
+    let black = 0
+    for (const row of board) {
+        for (const item of row) {
+            if(item !== Constants.emptySpace) {
+                item.color === "white" ? white++ : black++
+            }
+        }
+    }
+    return {white, black}
+}
+
+/**
+ * check if the game has ended
+ * 
+ * @param {object[][]} board the 2D board
+ * @return {any} the color of the winning player, or false
+ * @public
+*/
+export const validateGameEnd = (board) => {
     // console.log("Othello :: validateGameEnd")
-    const sequences = _decomposeToSequences(board)
-    for (const s of _filterSequencesOfMinLength(sequences, Constants.winningSequenceLength)) {
+    const sequences = decomposeToSequences(board)
+    for (const s of filterSequencesOfMinLength(sequences, Constants.winningSequenceLength)) {
         // any sequence with 4 or less counters in total, anywhere, cannot have a winning sequence
         const emptyCount = s.filter(x => x.item===Constants.emptySpace).length
         if (s.length - emptyCount < Constants.winningSequenceLength) {
@@ -184,21 +268,29 @@ const validateGameEnd = (board) => {
             if (s[i].item === Constants.emptySpace) {
                 continue
             } 
-            const name = s[i].item.name
-            if (s[i+1].item.name === name && s[i+2].item.name === name && s[i+3].item.name === name && s[i+4].item.name === name) {
-                return name
+            const color = s[i].item.color
+            if (s[i+1].item.color === color && s[i+2].item.color === color && s[i+3].item.color === color && s[i+4].item.color === color) {
+                return color
             }
         }
     }
     return false
 }
 
-const updateCaptures = (board, loc) => {
+/**
+ * update the board by capturing counters based on the latest move
+ * 
+ * @param {object[][]} board the 2D board
+ * @param {{x:number, y:number}} loc the location of the last move
+ * @return {object[][]} the updated 2D board
+ * @public
+*/
+export const updateCaptures = (board, loc) => {
     // console.log("Othello :: updateCaptures")
     const {x, y} = loc
     const player = board[y][x]
     const sequencesToCheck = []
-    for (const s of _getSequencesByLocation(board, loc)) {
+    for (const s of getSequencesByLocation(board, loc)) {
         // console.log("Debugging >> updateCaptures, examining sequence=", s)
         let i = 0
         while (i < s.length) {
@@ -208,8 +300,8 @@ const updateCaptures = (board, loc) => {
             }
             i++
         }
-        if ((i-1 >= 0 && s[i-1].item !== Constants.emptySpace && s[i-1].item.name !== player.name) ||
-            (i+1 < s.length && s[i+1].item !== Constants.emptySpace && s[i+1].item.name !== player.name)
+        if ((i-1 >= 0 && s[i-1].item !== Constants.emptySpace && s[i-1].item.color !== player.color) ||
+            (i+1 < s.length && s[i+1].item !== Constants.emptySpace && s[i+1].item.color !== player.color)
         ) {
             sequencesToCheck.push(s)
         }
@@ -233,7 +325,7 @@ const updateCaptures = (board, loc) => {
                 // console.log("Debugging >>     space at ", p, "no capture")
                 break
             }
-            if (prev.item.name === player.name) {
+            if (prev.item.color === player.color) {
                 for (const c of tmpStack) {
                     // console.log("Debugging >>     capture!!!  ", tmpStack)
                     const {x, y} = c
@@ -254,7 +346,7 @@ const updateCaptures = (board, loc) => {
                 // console.log("Debugging >>     space at ", n, "no capture")
                 break
             }
-            if (next.item.name === player.name) {
+            if (next.item.color === player.color) {
                 for (const c of tmpStack) {
                     // console.log("Debugging >>     capture!!!  ", tmpStack)
                     const {x, y} = c
@@ -269,5 +361,3 @@ const updateCaptures = (board, loc) => {
     }
     return board
 }
-
-export {getValidMoves, validateGameEnd, updateCaptures, _decomposeToSequences}

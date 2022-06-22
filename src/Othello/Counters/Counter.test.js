@@ -19,36 +19,36 @@ afterEach(() => {
 
 test('renders Counter Round White', () => {
   const color = 'white';
-  const shape = 'round';
+  const shape = 'counter-round';
   render(<Counter color={color} shape={shape} />);
-  const counterElement = screen.getByLabelText('game counter round white');
+  const counterElement = screen.getByLabelText('game counter counter-round white');
   expect(counterElement).toBeInTheDocument();
   assert.equal(counterElement instanceof HTMLDivElement, true);
 });
 
 test('renders Counter Round Black', () => {
   const color = 'black';
-  const shape = 'round';
+  const shape = 'counter-round';
   render(<Counter color={color} shape={shape} />);
-  const counterElement = screen.getByLabelText('game counter round black');
+  const counterElement = screen.getByLabelText('game counter counter-round black');
   expect(counterElement).toBeInTheDocument();
   assert.equal(counterElement instanceof HTMLDivElement, true);
 });
 
 test('renders Counter Square White', () => {
   const color = 'white';
-  const shape = 'square';
+  const shape = 'counter-square';
   render(<Counter color={color} shape={shape} />);
-  const counterElement = screen.getByLabelText('game counter square white');
+  const counterElement = screen.getByLabelText('game counter counter-square white');
   expect(counterElement).toBeInTheDocument();
   assert.equal(counterElement instanceof HTMLDivElement, true);
 });
 
 test('renders Counter Square Black', () => {
   const color = 'black';
-  const shape = 'square';
+  const shape = 'counter-square';
   render(<Counter color={color} shape={shape} />);
-  const counterElement = screen.getByLabelText('game counter square black');
+  const counterElement = screen.getByLabelText('game counter counter-square black');
   expect(counterElement).toBeInTheDocument();
   assert.equal(counterElement instanceof HTMLDivElement, true);
 });
