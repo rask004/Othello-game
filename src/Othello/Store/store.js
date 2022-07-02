@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit'
 import boardReducer from './boardSlice'
 import playersReducer from './playersSlice'
 import isFinishedReducer from './isFinishedSlice'
+import validMovesReducer from './validMovesSlice'
 
-export const store = configureStore({
+export default configureStore({
   reducer: {
     board: boardReducer,
-    players: playersReducer,
+    playerData: playersReducer,
     isFinished: isFinishedReducer,
+    validMoves: validMovesReducer,
   }
 })

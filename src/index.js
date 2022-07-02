@@ -1,12 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import OthelloGame from './Othello/Game';
+import ReactDOM from 'react-dom/client'
+import { Provider } from 'react-redux'
+import store from './Othello/Store/store'
+import OthelloGame from './Othello/Game'
+import StatelessOthelloGame from './Othello/GameStateless'
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <OthelloGame />
+    <Provider store={store}>
+      <OthelloGame />
+      <hr />
+      <StatelessOthelloGame />
+    </Provider>
   </React.StrictMode>
 );
 

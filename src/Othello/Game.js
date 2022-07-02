@@ -1,15 +1,18 @@
-import React from 'react';
-import './Game.css';
-import { store } from './Store/store'
-import { Provider } from 'react-redux'
+import React from 'react'
+
+import { useSelector, useDispatch } from 'react-redux'
+import { RESET, CHANGE_OPPONENT, NEXT } from './Store/playersSlice'
+
+import './Game.css'
 import SquareBoard from './Boards/SquareBoard'
 import OthelloCounter from './Counters/Counter'
 import Constants from './Constants'
-import {getValidMoves, validateGameEnd, updateCaptures, hasEmptySpaces, countPlayerCounters} from './Algorithms/Othello'
-import {RandomMoveAI, MostCapturesAI} from './Algorithms/OthelloAI'
+
+import { getValidMoves, validateGameEnd, updateCaptures, hasEmptySpaces, countPlayerCounters } from './Algorithms/Othello'
+import { RandomMoveAI, MostCapturesAI } from './Algorithms/OthelloAI'
 
 /** default Players, used during initialisation / game reset */
-const defaultPlayers = [{type: Constants.humanPlayer, color: Constants.colorBlack}, {type: Constants.humanPlayer, color: Constants.colorWhite}]
+const defaultPlayers = [{ type: Constants.humanPlayer, color: Constants.colorBlack }, { type: Constants.humanPlayer, color: Constants.colorWhite }]
 /** index of AI opponent, for quick reference  */
 const aiPlayerIndex = 1
 
@@ -32,6 +35,8 @@ class Game extends React.Component {
             winner: false,       // note: this is set to false, or to the winning player
             validMoves: []
         }
+
+        
 
         /** retrieves the available moves at this time */
         this.getValidMoves = getValidMoves
@@ -238,6 +243,7 @@ class Game extends React.Component {
          */
         const {board, isFinished, winner, gameStarted} = this.state
         const player = this.getCurrentPlayer()
+
         // console.log(board, isFinished, winner, player)
         let moves = []
         let winnerColor = undefined

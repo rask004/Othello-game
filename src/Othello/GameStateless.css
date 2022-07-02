@@ -1,0 +1,66 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.message {
+    margin: 1em;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: flex-start;
+}
+
+.message>span {
+    min-width: 32px;
+    margin: 0;
+}
+
+.message>span:first-child {
+    margin-right: 1em;
+    
+}
+
+.start-controls {
+    margin: 2em;
+}
+
+h2 {
+    margin-left: 1em;
+    font-size: 2em;
+}
+
+.start-controls div {
+    margin-bottom: 0.5em;
+}
+
+.start-controls label {
+    padding-left: 0.5em;
+    font-size: 1.25em;
+}
+
+button.reset, button.start {
+    margin-left: 1em;
+    margin-top: 1em;
+    font-size: 1.5em;
+    padding: 0.5em 0.75em;
+    background-color: rgb(232, 232, 232);
+    border-radius: 0.5em;
+    border: 2px solid rgb(100, 100, 100);
+    box-shadow: 2px 2px #B1B1B1;
+}
+
+button.reset:hover, button.start:hover {
+    background-color: rgb(255, 255, 255);
+    border-color: rgb(50,50,50);
+}
+
+button.reset:active, button.start:active {
+    box-shadow: 0 0;
+}
