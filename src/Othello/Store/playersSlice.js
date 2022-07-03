@@ -12,14 +12,17 @@ const initialState = {
     name: 'playerData',
     initialState,
     reducers: {
-      RESET: (state) => {
-        state.value = Constants.defaultPlayers
+      resetPlayers: (state) => {
+        state.value = {
+          players: Constants.defaultPlayers,
+          activePlayerIndex: 0
+        }
       },
-      CHANGE_OPPONENT: (state, action) => {
+      changeOpponent: (state, action) => {
         const {opponentType} = action.payload
         state.value.players[Constants.aiPlayerIndex].type = opponentType
       },
-      NEXT: (state) => {
+      nextPlayer: (state) => {
         let n = state.value.activePlayerIndex + 1
         if (n >= state.value.players.length) {
           n = 0
@@ -30,6 +33,6 @@ const initialState = {
   })
   
   // Action creators are generated for each case reducer function
-  export const { RESET, CHANGE_OPPONENT, NEXT } = playersSlice.actions
+  export const { resetPlayers, changeOpponent, nextPlayer } = playersSlice.actions
   
   export default playersSlice.reducer

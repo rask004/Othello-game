@@ -1,5 +1,5 @@
 class Constants {
-    static emptySpace = Symbol("empty space")
+    static emptySpace = " "
 
     static counterRound = "counter-round"
     static counterSquare = "counter-square"

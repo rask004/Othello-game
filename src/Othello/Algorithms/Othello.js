@@ -233,23 +233,25 @@ export const hasEmptySpaces = (board) => {
  * @public
 */
 export const countPlayerCounters = (board) => {
-    let white = 0
-    let black = 0
+    let counts = {}
     for (const row of board) {
         for (const item of row) {
             if(item !== Constants.emptySpace) {
-                item.color === "white" ? white++ : black++
+                if(!(item.color in counts)) {
+                    counts[item.color] = 0
+                }
+                counts[item.color]++
             }
         }
     }
-    return {white, black}
+    return counts
 }
 
 /**
  * check if the game has ended
  * 
  * @param {object[][]} board the 2D board
- * @return {any} the color of the winning player, or false
+ * @return {{type: String, color: String}|false} the winning player, or false
  * @public
 */
 export const validateGameEnd = (board) => {
@@ -270,7 +272,7 @@ export const validateGameEnd = (board) => {
             } 
             const color = s[i].item.color
             if (s[i+1].item.color === color && s[i+2].item.color === color && s[i+3].item.color === color && s[i+4].item.color === color) {
-                return color
+                return s[i].item
             }
         }
     }
@@ -282,13 +284,11 @@ export const validateGameEnd = (board) => {
  * 
  * @param {object[][]} board the 2D board
  * @param {{x:number, y:number}} loc the location of the last move
- * @return {object[][]} the updated 2D board
  * @public
 */
-export const updateCaptures = (board, loc) => {
+export const updateCaptures = function *(board, player, loc) {
     // console.log("Othello :: updateCaptures")
     const {x, y} = loc
-    const player = board[y][x]
     const sequencesToCheck = []
     for (const s of getSequencesByLocation(board, loc)) {
         // console.log("Debugging >> updateCaptures, examining sequence=", s)
@@ -303,18 +303,11 @@ export const updateCaptures = (board, loc) => {
         if ((i-1 >= 0 && s[i-1].item !== Constants.emptySpace && s[i-1].item.color !== player.color) ||
             (i+1 < s.length && s[i+1].item !== Constants.emptySpace && s[i+1].item.color !== player.color)
         ) {
-            sequencesToCheck.push(s)
+            sequencesToCheck.push({s, i})
         }
     }
     // console.log("Debugging >> updateCaptures, data=", loc, player.color, sequencesToCheck)
-    for (const s of sequencesToCheck) {
-        let i = 0
-        while (i < s.length) {
-            if (s[i].x === x && s[i].y === y) {
-                break
-            }
-            i++
-        }
+    for (const {s, i} of sequencesToCheck) {
         let tmpStack = []
         // console.log("Debugging >>   updateCaptures, at", x, y, "; process sequence=", s)
         for (let p = i - 1; p >= 0; p--) {
@@ -328,8 +321,8 @@ export const updateCaptures = (board, loc) => {
             if (prev.item.color === player.color) {
                 for (const c of tmpStack) {
                     // console.log("Debugging >>     capture!!!  ", tmpStack)
-                    const {x, y} = c
-                    board[y][x] = player
+                    const capture = {x:c.x, y:c.y}
+                    yield capture
                 }
                 break
             } else {
@@ -349,8 +342,8 @@ export const updateCaptures = (board, loc) => {
             if (next.item.color === player.color) {
                 for (const c of tmpStack) {
                     // console.log("Debugging >>     capture!!!  ", tmpStack)
-                    const {x, y} = c
-                    board[y][x] = player
+                    const capture = {x:c.x, y:c.y}
+                    yield capture
                 }
                 break
             } else {
@@ -359,5 +352,4 @@ export const updateCaptures = (board, loc) => {
             }
         }
     }
-    return board
 }

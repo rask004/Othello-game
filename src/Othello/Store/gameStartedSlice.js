@@ -4,20 +4,20 @@ const initialState = {
     value: false,
   }
 
-  export const isFinishedSlice = createSlice({
-    name: 'isFinished',
+  export const gameStartedSlice = createSlice({
+    name: 'gameStarted',
     initialState,
     reducers: {
-      RESET: (state) => {
+      resetGame: (state) => {
         state.value = false
       },
-      FINISH: (state) => {
+      startGame: (state) => {
         state.value = true
       }
     },
   })
   
   // Action creators are generated for each case reducer function
-  export const { RESET, FINISH } = isFinishedSlice.actions
+  export const { resetGame, startGame } = gameStartedSlice.actions
   
-  export default isFinishedSlice.reducer
+  export default gameStartedSlice.reducer
