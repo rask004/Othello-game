@@ -27,17 +27,18 @@ const initialState = {
     name: 'board',
     initialState,
     reducers: {
-      RESET: (state) => {
+      resetBoard: (state) => {
         state.value = initialiseBoard()
       },
-      UPDATE: (state, action ) => {
+      updateBoard: (state, action) => {
         const {x, y, item} = action.payload
+        // console.log("BOARD UPDATE: ", x, y, item)
         state.value[y][x] = item
       },
     },
   })
   
   // Action creators are generated for each case reducer function
-  export const { RESET, UPDATE } = boardSlice.actions
+  export const { resetBoard, updateBoard } = boardSlice.actions
   
   export default boardSlice.reducer

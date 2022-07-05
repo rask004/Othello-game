@@ -1,5 +1,5 @@
 class Constants {
-    static emptySpace = Symbol("empty space")
+    static emptySpace = " "
 
     static counterRound = "counter-round"
     static counterSquare = "counter-square"
@@ -13,8 +13,6 @@ class Constants {
 
     static boardSize = 8
 
-    static defaultPlayers = [{type: this.humanPlayer, color: this.colorBlack}, {type: this.humanPlayer, color: this.colorWhite}]
-
     static userPlayerIndex = 0
     static aiPlayerIndex = 1
 
@@ -22,6 +20,7 @@ class Constants {
     static aiPlayerRandom = "AIPlayerRandom"
     static aiPlayerMostCaptures = "AIPlayerMostCaptures"
 
+    static defaultPlayers = [{type: this.humanPlayer, color: this.colorBlack}, {type: this.humanPlayer, color: this.colorWhite}]
 }
 
 export default Constants;

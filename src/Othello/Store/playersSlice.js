@@ -1,27 +1,38 @@
 import { createSlice } from '@reduxjs/toolkit'
 import Constants from '../Constants'
 
-
 const initialState = {
-    value: Constants.defaultPlayers,
+    value: {
+      players: Constants.defaultPlayers,
+      activePlayerIndex: 0
+    }
   }
 
   export const playersSlice = createSlice({
-    name: 'players',
+    name: 'playerData',
     initialState,
     reducers: {
-      RESET: (state) => {
-        
-        state.value = Constants.defaultPlayers
+      resetPlayers: (state) => {
+        state.value = {
+          players: Constants.defaultPlayers,
+          activePlayerIndex: 0
+        }
       },
-      CHANGE_OPPONENT: (state, action) => {
+      changeOpponent: (state, action) => {
         const {opponentType} = action.payload
-        state.value[Constants.aiPlayerIndex].type = opponentType
+        state.value.players[Constants.aiPlayerIndex].type = opponentType
+      },
+      nextPlayer: (state) => {
+        let n = state.value.activePlayerIndex + 1
+        if (n >= state.value.players.length) {
+          n = 0
+        }
+        state.value.activePlayerIndex = n
       }
     },
   })
   
   // Action creators are generated for each case reducer function
-  export const { RESET, CHANGE_OPPONENT } = playersSlice.actions
+  export const { resetPlayers, changeOpponent, nextPlayer } = playersSlice.actions
   
   export default playersSlice.reducer
