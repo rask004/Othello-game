@@ -37,6 +37,8 @@ export default function Game() {
     }
     let message = ""
     let shownMoves = []
+    let newCounters
+    let capturedCounters = []
     // separate winning player object from color of winning player, while keeping behaviour consistent
     let winnerColor = false
     if (winner) {
@@ -52,14 +54,12 @@ export default function Game() {
     }
 
     const performMove = (x, y) => {
-        if (currentPlayer.type === Constants.humanPlayer) {
-            console.log("human turn, move=", x, y)
-        }
         const loc = {x, y}
-        // console.log(board, currentPlayer, loc)
         dispatch(updateBoard({x, y, item: currentPlayer}))
+        newCounters = {x, y, item: currentPlayer}
         for (const c of updateCaptures(board, currentPlayer, loc)) {
             dispatch(updateBoard({x:c.x, y:c.y, item: currentPlayer}))
+            capturedCounters.push({x:c.x, y:c.y, item: currentPlayer})
         }
         dispatch(nextPlayer())
     }
@@ -91,6 +91,9 @@ export default function Game() {
 
     // prevents conflicts with state updates and renders. delays AI move until after (re)rendering
     useEffect(() => {
+        // TODO: change styles to add animations. These might need store values?
+        console.log(newCounters, capturedCounters)
+
         const winner = validateGameEnd(board)
         if (!winner) {
             if (currentPlayer.type !== Constants.humanPlayer) {
@@ -107,8 +110,6 @@ export default function Game() {
                 }
 
                 const {x, y} = opponentAI.chooseMove(moves, board)
-
-                console.log("conputer turn, move=", x, y)
                 setTimeout(() => performMove(x, y), 250)
             }
         }
@@ -152,7 +153,6 @@ export default function Game() {
         </>
     )
 
-    // console.log("rendering...")
-
-    return (gameStarted ? boardLayout : startingLayout)
+    // return (gameStarted ? boardLayout : startingLayout)
+    return (boardLayout)
 }
