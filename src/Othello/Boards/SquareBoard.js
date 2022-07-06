@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useSelector } from 'react-redux'
 import './SquareBoard.css'
 import Constants from '../Constants'
 
@@ -12,8 +13,9 @@ function SquareBoard(props) {
     let c = 0;
     const {spaceCallback, CounterComponent, counterShape, validMoves} = props;
     const label = 'game board'
+    const boardState = useSelector((state) => state.board.value)
 
-    const board = props.board.map( function(row, y) {
+    const board = boardState.map( function(row, y) {
         return (
         <div data-testid={`board-row-${y + 1}`} className="board-row" key={`row-${y + 1}`}>
             { row.map( function(owner, x) {
@@ -66,13 +68,22 @@ function SquareBoardSpace(props) {
 
     if (counter) {
         return (
-            <div data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`}  aria-label={label} className={boardSpaceClass}>
-                {counter}
+            <div 
+                data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`}
+                id={`${boardSpaceClass}-${tid.x}-${tid.y}`}
+                aria-label={label}
+                className={boardSpaceClass}>
+                    {counter}
             </div>
         );
     } else {
         return (
-            <div data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`}  aria-label={label} className={boardSpaceClass}></div>
+            <div 
+                data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`}
+                id={`${boardSpaceClass}-${tid.x}-${tid.y}`}
+                aria-label={label}
+                className={boardSpaceClass}>
+            </div>
         );
     }
 }
@@ -92,13 +103,22 @@ SquareBoardSpace.propTypes = {
     const label = 'square space interactive'
     if (counter) {
         return (
-            <button data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`} aria-label={label} className={boardSpaceClass} onClick={callback}>
-                {counter}
+            <button data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`} 
+                id={`${boardSpaceClass}-${tid.x}-${tid.y}`}
+                aria-label={label}
+                className={boardSpaceClass}
+                onClick={callback}>
+                    {counter}
             </button>
         );
     } else {
         return (
-            <button data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`} aria-label={label} className={boardSpaceClass} onClick={callback}></button>
+            <button data-testid={`${boardSpaceClass}-${tid.x}-${tid.y}`}
+                id={`${boardSpaceClass}-${tid.x}-${tid.y}`}
+                aria-label={label}
+                className={boardSpaceClass}
+                onClick={callback}>
+            </button>
         );
     }
 }

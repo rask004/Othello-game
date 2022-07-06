@@ -1,8 +1,17 @@
+@keyframes newCounterAppear {
+    0% {width: 0px; height: 0px}
+    100% {width: 36px; height: 36px}
+}
+
 .counter {
     border: 1px solid black;
     width: 36px;
     height: 36px;
     margin: auto;
+}
+
+.counter-new {
+    animation: newCounterAppear 0.25s ease-out 0s 1 normal;
 }
 
 .counter-round {

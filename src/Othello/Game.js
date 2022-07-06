@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { resetPlayers, changeOpponent, nextPlayer } from './Store/playersSlice'
 import { resetBoard, updateBoard } from './Store/boardSlice'
@@ -8,6 +8,7 @@ import './Game.css'
 import SquareBoard from './Boards/SquareBoard'
 import OthelloCounter from './Counters/Counter'
 import Constants from './Constants'
+import StatusPanel from './Status/StatusPanel'
 
 import { getValidMoves, validateGameEnd, updateCaptures, hasEmptySpaces, countPlayerCounters } from './Algorithms/Othello'
 import { RandomMoveAI, MostCapturesAI } from './Algorithms/OthelloAI'
@@ -27,6 +28,9 @@ export default function Game() {
     const { players, activePlayerIndex } = useSelector(state => state.playerData.value)
     const gameStarted = useSelector(state => state.gameStarted.value)
 
+    const [newCounter, setNewCounter] = useState()
+    const [captures, setCaptures] = useState([])
+
     const counterShape = Constants.counterRound
     const currentPlayer = players[activePlayerIndex]
     let winner = validateGameEnd(board)
@@ -37,8 +41,6 @@ export default function Game() {
     }
     let message = ""
     let shownMoves = []
-    let newCounters
-    let capturedCounters = []
     // separate winning player object from color of winning player, while keeping behaviour consistent
     let winnerColor = false
     if (winner) {
@@ -55,12 +57,14 @@ export default function Game() {
 
     const performMove = (x, y) => {
         const loc = {x, y}
+        let capturedCounters = []
         dispatch(updateBoard({x, y, item: currentPlayer}))
-        newCounters = {x, y, item: currentPlayer}
+        setNewCounter({x, y, item: currentPlayer})
         for (const c of updateCaptures(board, currentPlayer, loc)) {
             dispatch(updateBoard({x:c.x, y:c.y, item: currentPlayer}))
             capturedCounters.push({x:c.x, y:c.y, item: currentPlayer})
         }
+        setCaptures(capturedCounters)
         dispatch(nextPlayer())
     }
 
@@ -87,15 +91,23 @@ export default function Game() {
         }
     } else if (currentPlayer.type === Constants.humanPlayer) {
         shownMoves = moves
+        message = <div><span>Current Turn: </span><OthelloCounter color={currentPlayer.color} shape={counterShape} /></div>
     } 
 
     // prevents conflicts with state updates and renders. delays AI move until after (re)rendering
     useEffect(() => {
-        // TODO: change styles to add animations. These might need store values?
-        console.log(newCounters, capturedCounters)
-
         const winner = validateGameEnd(board)
+        let counterElement
+
         if (!winner) {
+            // use newCounter, captures to change respective counter styles
+            if (newCounter != null) {
+                const newCounterSpaceId = `#board-space-${newCounter.x}-${newCounter.y}`
+                counterElement = document.querySelector(newCounterSpaceId).children[0]
+                console.log("found new counter element: ", counterElement)
+                counterElement.classList.add("counter-new")
+            }
+
             if (currentPlayer.type !== Constants.humanPlayer) {
                 let opponentAI
                 switch (currentPlayer.type) {
@@ -142,15 +154,17 @@ export default function Game() {
 
     const boardLayout = (
         <>
-            <div className="message">{winner? 
-                message : 
-                <><span>Current Turn: </span><OthelloCounter color={currentPlayer.color} shape={counterShape} /></>}
-            </div>
-            <div className="board-container">
-                <SquareBoard board={board} CounterComponent={OthelloCounter} counterShape={counterShape} validMoves={shownMoves} spaceCallback={performMove} />
+            <div className='container'>
+                <div className="board-container">
+                    <SquareBoard CounterComponent={OthelloCounter} counterShape={counterShape} validMoves={shownMoves} spaceCallback={performMove} />
+                </div>
+                <div className="message-container">
+                    <StatusPanel message={message} />
+                </div>
             </div>
             <button className="reset" onClick={reset}>Reset</button>
         </>
+        
     )
 
     // return (gameStarted ? boardLayout : startingLayout)

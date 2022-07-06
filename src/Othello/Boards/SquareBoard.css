@@ -1,11 +1,9 @@
 .board {
-    display: inline-block;
+    display: block;
     border: 2px solid #B1B1B1;
     padding: 4px;
-    margin: 8px;
-    margin-bottom: 16px;
     box-shadow: 8px 8px #666666;
-    background: url("../Assets/board-grain.jpg");
+    background: url("./Assets/board-grain.jpg");
 }
 
 .board-row {
