@@ -1,37 +1,29 @@
 .board {
-    display: block;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
     border: 2px solid #B1B1B1;
     padding: 4px;
     box-shadow: 8px 8px #666666;
     background: url("./Assets/board-grain.jpg");
 }
 
-.board-row {
-    display: flex;
-}
-
-.board-row:last-child > .board-space, .board-row:last-child > .board-button {
-    border-bottom: 1px solid #B1B1B1;
-}
-
 .board-space {
     border-width: 0;
     border-style: solid;
-    border-top: 1px solid #B1B1B1;
-    border-left: 1px solid #B1B1B1;
-    border-bottom: 1px solid white;
+    border-top: 1px solid #7C7C7C;
+    border-left: 1px solid #A2A2A2;
+    border-bottom: 1px solid #DFDFDF;
     border-right: 1px solid white;
-    width: 48px;
-    height: 48px;
-    padding: 2px;
-    display: inline-flex;
+    padding: 8px;
     background-color: rgba(232,230,230,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 button.board-space {
     cursor: pointer;
-    width: 54px;
-    height: 54px;
     background-color: rgba(248,248,248,0.6);
     border-color: rgba(88, 88, 88, 0.5);
 }
@@ -42,8 +34,4 @@ button.board-space:hover {
 
 button.board-space:active {
     background-color: rgba(255,255,255,1);
-}
-
-.board-space:last-child, .board-button:last-child {
-    border-right: 1px solid #C8C8C8;
 }

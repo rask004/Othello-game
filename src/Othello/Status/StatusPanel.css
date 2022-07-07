@@ -1,6 +1,5 @@
 .message {
-    font-size: 1.5em;
-    flex-shrink: 1;
+    font-size: 24px;
     display: flex;
     flex-flow: column nowrap;
 }
@@ -18,7 +17,6 @@
 .message span {
     min-width: 32px;
     margin-right: 16px;
-
 }
 
 .message span:last-child {

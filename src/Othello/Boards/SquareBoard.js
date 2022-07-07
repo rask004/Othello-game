@@ -11,21 +11,19 @@ const boardSpaceClass = 'board-space'
  */
 function SquareBoard(props) {
     let c = 0;
-    const {spaceCallback, CounterComponent, counterShape, validMoves} = props;
+    const {spaceCallback, CounterComponent, counterShape, validMoves, counterGetSrcFunc} = props;
     const label = 'game board'
     const boardState = useSelector((state) => state.board.value)
 
     const board = boardState.map( function(row, y) {
-        return (
-        <div data-testid={`board-row-${y + 1}`} className="board-row" key={`row-${y + 1}`}>
-            { row.map( function(owner, x) {
+        return row.map( function(owner, x) {
                 c++;
                 const tid = {x, y}
                 const isValidMove = validMoves.filter((i) => {return i.x===x && i.y===y}).length > 0
                 // console.log(isValidMove, x, y)
                 if (owner !== Constants.emptySpace) {
                     const {color} = owner;
-                    const counter = (<CounterComponent color={color} shape={counterShape} />)
+                    const counter = (<CounterComponent color={color} shape={counterShape} getSrc={counterGetSrcFunc} />)
                     return (
                         <SquareBoardSpace tid={tid} key={`space-${c}`} counter={counter} />
                     );
@@ -35,8 +33,7 @@ function SquareBoard(props) {
                 } else {
                     return <SquareBoardSpace tid={tid} key={`space-${c}`} />;
                 }
-            })}
-        </div>
+            }
         )
     });
 
