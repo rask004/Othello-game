@@ -13,15 +13,13 @@ import StatusPanel from './Status/StatusPanel'
 import { getValidMoves, validateGameEnd, updateCaptures, hasEmptySpaces, countPlayerCounters } from './Algorithms/Othello'
 import { RandomMoveAI, MostCapturesAI } from './Algorithms/OthelloAI'
 
-
+/**
+ * Show a Start screen allowing user to select type of opponent, then start the game
+ * During gameplay, show the board in the current state, and the current turn.
+ * When the game has ended, show the final board with a message about who won.
+ * Alongside the board, show a restart button to return to the start screen.
+ */
 export default function Game() { 
-
-    /**
-     * Show a Start screen allowing user to select type of opponent, then start the game
-     * During gameplay, show the board in the current state, and the current turn.
-     * When the game has ended, show the final board with a message about who won.
-     * Alongside the board, show a restart button to return to the start screen.
-     */
 
     const dispatch = useDispatch()
     let board = useSelector((state) => state.board.value)
@@ -30,6 +28,7 @@ export default function Game() {
 
     const [newCounter, setNewCounter] = useState()
     const [captures, setCaptures] = useState([])
+    console.log(newCounter)
 
     const counterShape = Constants.counterRound
     const currentPlayer = players[activePlayerIndex]
@@ -83,6 +82,7 @@ export default function Game() {
     
     const beginGame = () => {
         dispatch(startGame())
+        setNewCounter(null)
     }
 
     const getSrc = (c) => {
@@ -94,58 +94,61 @@ export default function Game() {
             message = <div>Game is a Draw!</div>
         } else {
 
-            message = <div><OthelloCounter color={winnerColor} shape={counterShape} getSrc={getSrc} /><span>Is the Winner! </span></div>
+            message = <div><span><OthelloCounter color={winnerColor} shape={counterShape} getSrc={getSrc} /></span><span>Is the Winner! </span></div>
         }
     } else if (currentPlayer.type === Constants.humanPlayer) {
         shownMoves = moves
         message = <div><span>Current Turn: </span><OthelloCounter color={currentPlayer.color} shape={counterShape} getSrc={getSrc} /></div>
     } 
 
-    // prevents conflicts with state updates and renders. delays AI move until after (re)rendering
+    // prevents conflicts with state updates and renders during gameplay. delays AI move until after (re)rendering
     useEffect(() => {
-        const boardElement = document.querySelector('div.board')
-        boardElement.style.maxWidth = '800px'
+        if (gameStarted) {
+            const boardElement = document.querySelector('div.board')
 
-        const statusElement = document.querySelector('.message')
-        const statusCounters = statusElement.querySelectorAll('.counter')
-        console.log(statusCounters)
-        for (const c of statusCounters) {
-            c.style.maxWidth = '1.5em'
-            c.style.maxHeight = '1.5em'
-        }
+            boardElement.style.maxWidth = '800px'
 
-        const winner = validateGameEnd(board)
-        let counterElement
-        // use newCounter, captures to change respective counter styles
-        // if there is a new counter, there must be captures
-        if (newCounter != null) {
-            const newCounterSpaceId = `#board-space-${newCounter.x}-${newCounter.y}`
-            counterElement = document.querySelector(newCounterSpaceId).children[0]
-            counterElement.classList.add("counter-new")
-
-            for (const {x, y} of captures) {
-                const capturedCounterspaceId = `#board-space-${x}-${y}`
-                counterElement = document.querySelector(capturedCounterspaceId).children[0]
-                counterElement.classList.add("counter-new")
+            const statusElement = document.querySelector('.message')
+            const statusCounters = statusElement.querySelectorAll('.counter')
+            // console.log(statusCounters)
+            for (const c of statusCounters) {
+                c.style.maxWidth = '1.5em'
+                c.style.maxHeight = '1.5em'
             }
-        }
 
-        if (!winner) {
-            if (currentPlayer.type !== Constants.humanPlayer) {
-                let opponentAI
-                switch (currentPlayer.type) {
-                    case Constants.aiPlayerRandom:
-                        opponentAI = RandomMoveAI
-                        break
-                    case Constants.aiPlayerMostCaptures:
-                        opponentAI = MostCapturesAI
-                        break
-                    default:
-                        opponentAI = undefined
+            const winner = validateGameEnd(board)
+            let counterElement
+            // use newCounter, captures to change respective counter styles
+            // if there is a new counter, there must be captures
+            if (newCounter != null) {
+                const newCounterSpaceId = `#board-space-${newCounter.x}-${newCounter.y}`
+                counterElement = document.querySelector(newCounterSpaceId).children[0]
+                counterElement.classList.add("counter-new")
+
+                for (const {x, y} of captures) {
+                    const capturedCounterspaceId = `#board-space-${x}-${y}`
+                    counterElement = document.querySelector(capturedCounterspaceId).children[0]
+                    counterElement.classList.add("counter-new")
                 }
+            }
 
-                const {x, y} = opponentAI.chooseMove(moves, board)
-                setTimeout(() => performMove(x, y), 250)
+            if (!winner) {
+                if (currentPlayer.type !== Constants.humanPlayer) {
+                    let opponentAI
+                    switch (currentPlayer.type) {
+                        case Constants.aiPlayerRandom:
+                            opponentAI = RandomMoveAI
+                            break
+                        case Constants.aiPlayerMostCaptures:
+                            opponentAI = MostCapturesAI
+                            break
+                        default:
+                            opponentAI = undefined
+                    }
+
+                    const {x, y} = opponentAI.chooseMove(moves, board)
+                    setTimeout(() => performMove(x, y), 250)
+                }
             }
         }
     })
@@ -190,6 +193,7 @@ export default function Game() {
         
     )
 
-    // return (gameStarted ? boardLayout : startingLayout)
-    return (boardLayout)
+    return (gameStarted ? boardLayout : startingLayout)
+
+    // return (startingLayout)
 }
