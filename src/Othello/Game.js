@@ -3,12 +3,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { resetPlayers, changeOpponent, nextPlayer } from './Store/playersSlice'
 import { resetBoard, updateBoard } from './Store/boardSlice'
 import { resetGame, startGame } from './Store/gameStartedSlice'
+import { clear as clearMessages, addMessage } from './Store/statusMessagesSlice'
 
 import './Game.css'
 import SquareBoard from './Boards/SquareBoard'
 import OthelloCounter from './Counters/ImageCounter'
 import Constants from './Constants'
-import StatusPanel from './Status/StatusPanel'
+import { MultiMessagePanel } from './Status/StatusPanel'
 
 import { getValidMoves, validateGameEnd, updateCaptures, hasEmptySpaces, countPlayerCounters } from './Algorithms/Othello'
 import { RandomMoveAI, MostCapturesAI } from './Algorithms/OthelloAI'
@@ -28,7 +29,7 @@ export default function Game() {
 
     const [newCounter, setNewCounter] = useState()
     const [captures, setCaptures] = useState([])
-    console.log(newCounter)
+    // console.log(newCounter)
 
     const counterShape = Constants.counterRound
     const currentPlayer = players[activePlayerIndex]
@@ -37,6 +38,7 @@ export default function Game() {
     if (moves.length === 0) {
         console.log("Skipping turn: ", currentPlayer)
         dispatch(nextPlayer())
+        dispatch(addMessage(`Skip Turn for player ${currentPlayer.color}`))
     }
     let message = ""
     let shownMoves = []
@@ -60,12 +62,14 @@ export default function Game() {
         const prevPlayerIndex = activePlayerIndex !== Constants.aiPlayerIndex ? Constants.aiPlayerIndex : 0
         const prevPlayer = players[prevPlayerIndex]
         dispatch(updateBoard({x, y, item: currentPlayer}))
+        dispatch(addMessage(`Player ${currentPlayer.color} placed counter at ${x}, ${y}`))
         setNewCounter({x, y, item: currentPlayer})
         for (const c of updateCaptures(board, currentPlayer, loc)) {
             dispatch(updateBoard({x:c.x, y:c.y, item: currentPlayer}))
             capturedCounters.push({x:c.x, y:c.y, item: prevPlayer})
         }
         setCaptures(capturedCounters)
+        dispatch(addMessage(`Player ${currentPlayer.color} captured ${capturedCounters.length} ${capturedCounters.length === 1 ? 'counter' : 'counters'}`))
         dispatch(nextPlayer())
     }
 
@@ -83,6 +87,7 @@ export default function Game() {
     const beginGame = () => {
         dispatch(startGame())
         setNewCounter(null)
+        dispatch(clearMessages())
     }
 
     const getSrc = (c) => {
@@ -91,18 +96,19 @@ export default function Game() {
 
     if (winnerColor) {
         if (winnerColor === "draw") {
-            message = <div>Game is a Draw!</div>
+            message = "Game is a Draw!"
         } else {
 
-            message = <div><span><OthelloCounter color={winnerColor} shape={counterShape} getSrc={getSrc} /></span><span>Is the Winner! </span></div>
+            message = `Player ${winnerColor} Is the Winner!`
         }
     } else if (currentPlayer.type === Constants.humanPlayer) {
         shownMoves = moves
-        message = <div><span>Current Turn: </span><OthelloCounter color={currentPlayer.color} shape={counterShape} getSrc={getSrc} /></div>
-    } 
+        message = `Current Turn: ${currentPlayer.color}`
+    }
 
     // prevents conflicts with state updates and renders during gameplay. delays AI move until after (re)rendering
     useEffect(() => {
+        dispatch(addMessage(message))
         if (gameStarted) {
             const boardElement = document.querySelector('div.board')
 
@@ -185,7 +191,7 @@ export default function Game() {
                     <SquareBoard CounterComponent={OthelloCounter} counterShape={counterShape} validMoves={shownMoves} spaceCallback={performMove} counterGetSrcFunc={getSrc}/>
                 </div>
                 <div className="message-container">
-                    <StatusPanel message={message} />
+                    <MultiMessagePanel />
                 </div>
             </div>
             <button className="reset" onClick={reset}>Reset</button>

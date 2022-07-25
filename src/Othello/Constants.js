@@ -16,6 +16,8 @@ class Constants {
     static userPlayerIndex = 0
     static aiPlayerIndex = 1
 
+    static maxMessageCount = 13
+
     static humanPlayer = "Human"
     static aiPlayerRandom = "AIPlayerRandom"
     static aiPlayerMostCaptures = "AIPlayerMostCaptures"
