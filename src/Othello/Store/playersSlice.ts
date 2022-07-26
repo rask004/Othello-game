@@ -12,17 +12,17 @@ const initialState = {
     name: 'playerData',
     initialState,
     reducers: {
-      resetPlayers: (state) => {
+      resetPlayers: (state:any) => {
         state.value = {
           players: Constants.defaultPlayers,
           activePlayerIndex: 0
         }
       },
-      changeOpponent: (state, action) => {
+      changeOpponent: (state:any, action:any) => {
         const {opponentType} = action.payload
         state.value.players[Constants.aiPlayerIndex].type = opponentType
       },
-      nextPlayer: (state) => {
+      nextPlayer: (state:any) => {
         let n = state.value.activePlayerIndex + 1
         if (n >= state.value.players.length) {
           n = 0
