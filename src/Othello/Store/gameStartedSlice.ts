@@ -8,10 +8,10 @@ const initialState = {
     name: 'gameStarted',
     initialState,
     reducers: {
-      resetGame: (state) => {
+      resetGame: (state:any) => {
         state.value = false
       },
-      startGame: (state) => {
+      startGame: (state:any) => {
         state.value = true
       }
     },

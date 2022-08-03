@@ -3,10 +3,14 @@ import { useSelector } from 'react-redux'
 
 import './StatusPanel.css'
 
+type StatusProps = {
+    message: String
+}
+
 /**
  * Shows a status message
  */
-export default function StatusPanel(props) { 
+export default function StatusPanel(props: StatusProps) { 
 
     const {message} = props
 
@@ -23,9 +27,9 @@ export default function StatusPanel(props) {
  */
 export function MultiMessagePanel() { 
 
-    let messages = useSelector((state) => state.statusMessages.value)
+    let messages = useSelector((state: any) => state.statusMessages.value)
 
-    const messageElements = messages.map((m, i) => {
+    const messageElements = messages.map((m: String, i: number) => {
         return <div key={i}>{m}</div>
     })
 

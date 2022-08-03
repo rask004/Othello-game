@@ -1,38 +1,29 @@
-import Constants from '../Constants'
+import Constants, {Position, AIObject, Player} from '../Constants'
 import {getSequencesByLocation} from './Othello'
 
-/* 
-    All AI objects must have this Interface: 
-        AiObject.chooseMove( possibleMoves: {x, y}[], board: object[][] )
-            ->  returns:  move: {x, y}
-    
-        returned {x, y} must come from within {x, y}[]].
-*/
 
-
-
-const RandomMoveAI = {
+const RandomMoveAI:AIObject = {
     /**
      * An AI Object which randomly chooses moves.
-     * @param {{x:number, y:number}[]} possibleMoves collection of moves to choose from
-     * @param {object[][]} board the othello board the moves are from
-     * @returns {{x:number, y:number}} a move, randomly chosen from parameter possibleMoves
+     * @param {Position} possibleMoves collection of moves to choose from
+     * @param {Array<Array<Player>>} board the othello board the moves are from
+     * @returns {Position} a move, randomly chosen from parameter possibleMoves
      */
-    chooseMove: (possibleMoves, board) => {
+    chooseMove: (possibleMoves:Position[], board:Array<Array<Player>>): Position => {
         const index = Math.floor(Math.random() * possibleMoves.length)
         const move = possibleMoves[index]
         return move
     }
 }
 
-const MostCapturesAI = {
+const MostCapturesAI:AIObject = {
     /**
-     * An AI Object which randomly chooses moves.
-     * @param {{x:number, y:number}[]} possibleMoves collection of moves to choose from
-     * @param {object[][]} board the othello board the moves are from
-     * @returns {{x:number, y:number}} a move, randomly chosen from parameter possibleMoves
+     * An AI Object which always chooses the move with the most captures.
+     * @param {Position} possibleMoves collection of moves to choose from
+     * @param {Array<Array<Player>>} board the othello board the moves are from
+     * @returns {Position} a move, randomly chosen from parameter possibleMoves
      */
-    chooseMove: (possibleMoves, board) => {
+    chooseMove: (possibleMoves:Position[], board:Array<Array<Player>>): Position => {
         /** @var {{x:number, y:number, rank:number}[]} bestMoves */
         let rankedMoves = []
         /** the highest ranked move discovered */
@@ -41,7 +32,7 @@ const MostCapturesAI = {
         for (const move of possibleMoves) {
             let rank = 0
             for (const sequence of getSequencesByLocation(board, move)) {
-                let moveIndex
+                let moveIndex = 0
                 for (let i = 0; i < sequence.length; i++) {
                     if (move.x===sequence[i].x && move.y===sequence[i].y) {
                         moveIndex = i
@@ -53,7 +44,7 @@ const MostCapturesAI = {
                 let p = moveIndex - 1
                 for (let i = p; i >= 0; i--) {
                     // console.log(">>     ", rank, sequence[i], sequence[i].item === Constants.emptySpace || sequence[i].item.color !== captureColor)
-                    if (sequence[i].item === Constants.emptySpace) {
+                    if (sequence[i].item.type === Constants.emptyPlayer.type) {
                         break
                     } else if (sequence[i].item.color === captureColor) {
                         c++
@@ -67,7 +58,7 @@ const MostCapturesAI = {
                 let n = moveIndex + 1
                 for (let i = n; i < sequence.length; i++) {
                     // console.log(">>     ", rank, sequence[i], sequence[i].item === Constants.emptySpace || sequence[i].item.color !== captureColor)
-                    if (sequence[i].item === Constants.emptySpace) {
+                    if (sequence[i].item.type === Constants.emptyPlayer.type) {
                         break
                     } else if (sequence[i].item.color === captureColor) {
                         c++

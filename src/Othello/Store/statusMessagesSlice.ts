@@ -9,10 +9,10 @@ const initialState = {
     name: 'statusMessages',
     initialState,
     reducers: {
-      clear: (state) => {
+      clear: (state:any) => {
         state.value = []
       },
-      addMessage: (state, action) => {
+      addMessage: (state:any, action:any) => {
         // console.log(action)
         const message = action.payload
         const last = state.value[state.value.length - 1]

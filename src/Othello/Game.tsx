@@ -8,11 +8,12 @@ import { clear as clearMessages, addMessage } from './Store/statusMessagesSlice'
 import './Game.css'
 import SquareBoard from './Boards/SquareBoard'
 import OthelloCounter from './Counters/ImageCounter'
-import Constants from './Constants'
+import Constants, {Position, SequenceItem, AIObject, Player} from './Constants'
 import { MultiMessagePanel } from './Status/StatusPanel'
 
 import { getValidMoves, validateGameEnd, updateCaptures, hasEmptySpaces, countPlayerCounters } from './Algorithms/Othello'
 import { RandomMoveAI, MostCapturesAI } from './Algorithms/OthelloAI'
+
 
 /**
  * Show a Start screen allowing user to select type of opponent, then start the game
@@ -23,27 +24,27 @@ import { RandomMoveAI, MostCapturesAI } from './Algorithms/OthelloAI'
 export default function Game() { 
 
     const dispatch = useDispatch()
-    let board = useSelector((state) => state.board.value)
-    const { players, activePlayerIndex } = useSelector(state => state.playerData.value)
-    const gameStarted = useSelector(state => state.gameStarted.value)
+    let board:Array<Array<Player>> = useSelector<any, any>(state => state.board.value)
+    const { players, activePlayerIndex } = useSelector<any, any>(state => state.playerData.value)
+    const gameStarted = useSelector<any, any>(state => state.gameStarted.value)
 
-    const [newCounter, setNewCounter] = useState()
-    const [captures, setCaptures] = useState([])
-    // console.log(newCounter)
+    const [newCounter, setNewCounter] = useState<SequenceItem|null>()
+    const [captures, setCaptures] = useState<SequenceItem[]>([])
 
     const counterShape = Constants.counterRound
     const currentPlayer = players[activePlayerIndex]
     let winner = validateGameEnd(board)
     let moves = getValidMoves(board, currentPlayer)
-    if (moves.length === 0) {
-        console.log("Skipping turn: ", currentPlayer)
+    // console.log("Game Stats: player=", currentPlayer, "; moves=", moves, "; gameStarted=", gameStarted, "; gameEndState=", winner)
+    if (moves.length === 0 && gameStarted) {
+        // console.log("Skipping turn: ", currentPlayer)
         dispatch(nextPlayer())
         dispatch(addMessage(`Skip Turn for player ${currentPlayer.color}`))
     }
     let message = ""
-    let shownMoves = []
+    let shownMoves:Position[] = []
     // separate winning player object from color of winning player, while keeping behaviour consistent
-    let winnerColor = false
+    let winnerColor:boolean|string = false
     if (winner) {
         winnerColor = winner.color
     } else if (!hasEmptySpaces(board)) {
@@ -56,7 +57,7 @@ export default function Game() {
         }
     }
 
-    const performMove = (x, y) => {
+    const performMove = (x:number, y:number) => {
         const loc = {x, y}
         let capturedCounters = []
         const prevPlayerIndex = activePlayerIndex !== Constants.aiPlayerIndex ? Constants.aiPlayerIndex : 0
@@ -64,7 +65,9 @@ export default function Game() {
         dispatch(updateBoard({x, y, item: currentPlayer}))
         dispatch(addMessage(`Player ${currentPlayer.color} placed counter at ${x}, ${y}`))
         setNewCounter({x, y, item: currentPlayer})
+        // TODO fix captures
         for (const c of updateCaptures(board, currentPlayer, loc)) {
+            console.log(`Captured: ${c.x}, ${c.y}`)
             dispatch(updateBoard({x:c.x, y:c.y, item: currentPlayer}))
             capturedCounters.push({x:c.x, y:c.y, item: prevPlayer})
         }
@@ -79,9 +82,11 @@ export default function Game() {
         dispatch(resetGame())
     }
 
-    const changeAiOpponent = (e) => {
-        const opponentType = e.target.value
-        dispatch(changeOpponent({opponentType}))
+    const changeAiOpponent = (e:any) => {
+        if (e.target != null) {
+            const opponentType = e.target.value
+            dispatch(changeOpponent({opponentType}))
+        }
     }
     
     const beginGame = () => {
@@ -90,7 +95,7 @@ export default function Game() {
         dispatch(clearMessages())
     }
 
-    const getSrc = (c) => {
+    const getSrc = (c:string) => {
         return `./Assets/counter-${c}-grain.jpg`
     }
 
@@ -110,12 +115,12 @@ export default function Game() {
     useEffect(() => {
         dispatch(addMessage(message))
         if (gameStarted) {
-            const boardElement = document.querySelector('div.board')
+            const boardElement:any = document.querySelector('div.board')
 
-            boardElement.style.maxWidth = '800px'
+            boardElement!.style.maxWidth = '800px'
 
             const statusElement = document.querySelector('.message')
-            const statusCounters = statusElement.querySelectorAll('.counter')
+            const statusCounters:any = statusElement!.querySelectorAll('.counter')
             // console.log(statusCounters)
             for (const c of statusCounters) {
                 c.style.maxWidth = '1.5em'
@@ -123,36 +128,40 @@ export default function Game() {
             }
 
             const winner = validateGameEnd(board)
-            let counterElement
+            let counterElement:any
             // use newCounter, captures to change respective counter styles
             // if there is a new counter, there must be captures
             if (newCounter != null) {
                 const newCounterSpaceId = `#board-space-${newCounter.x}-${newCounter.y}`
-                counterElement = document.querySelector(newCounterSpaceId).children[0]
-                counterElement.classList.add("counter-new")
+                const ele = document.querySelector(newCounterSpaceId)
+                if (ele != null) {
+                    counterElement = ele.children[0]
+                    counterElement.classList.add("counter-new")
+                }
+                
 
                 for (const {x, y} of captures) {
                     const capturedCounterspaceId = `#board-space-${x}-${y}`
-                    counterElement = document.querySelector(capturedCounterspaceId).children[0]
-                    counterElement.classList.add("counter-new")
+                    const ele = document.querySelector(capturedCounterspaceId)
+                    if (ele != null) {
+                        counterElement = ele.children[0]
+                        counterElement.classList.add("counter-new")
+                    }
                 }
             }
 
             if (!winner) {
                 if (currentPlayer.type !== Constants.humanPlayer) {
-                    let opponentAI
+                    let opponentAI:AIObject
                     switch (currentPlayer.type) {
-                        case Constants.aiPlayerRandom:
-                            opponentAI = RandomMoveAI
-                            break
                         case Constants.aiPlayerMostCaptures:
                             opponentAI = MostCapturesAI
                             break
                         default:
-                            opponentAI = undefined
+                            opponentAI = RandomMoveAI
                     }
 
-                    const {x, y} = opponentAI.chooseMove(moves, board)
+                    const {x, y} = opponentAI?.chooseMove(moves, board)
                     setTimeout(() => performMove(x, y), 250)
                 }
             }

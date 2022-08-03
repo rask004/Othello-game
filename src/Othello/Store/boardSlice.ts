@@ -7,7 +7,7 @@ import Constants from '../Constants'
     for (let i = 0; i < Constants.boardSize; i++) {
         const row = []
         for (let j = 0; j < Constants.boardSize; j++) {
-            row.push(Constants.emptySpace)
+            row.push(Constants.emptyPlayer)
         }
         spaces.push(row)
     }
@@ -27,10 +27,10 @@ const initialState = {
     name: 'board',
     initialState,
     reducers: {
-      resetBoard: (state) => {
+      resetBoard: (state:any) => {
         state.value = initialiseBoard()
       },
-      updateBoard: (state, action) => {
+      updateBoard: (state:any, action:any) => {
         const {x, y, item} = action.payload
         // console.log("BOARD UPDATE: ", x, y, item)
         state.value[y][x] = item
